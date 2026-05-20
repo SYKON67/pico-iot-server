@@ -1,0 +1,18 @@
+# Pico IoT Server - Gitignore
+
+node_modules/
+npm-debug.log
+.env
+.DS_Store
+*.pyc
+__pycache__/
+.vscode/
+.idea/
+dist/
+build/
+
+# Mu Editor
+.Mu_projects/
+
+# Settings met wachtwoord
+settings.toml
