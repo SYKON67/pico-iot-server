@@ -76,7 +76,7 @@ app.get('/api/latest', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0',() => {
     console.log(`\n🚀 Server draait op http://localhost:${PORT}`);
     console.log(`📊 Dashboard: http://localhost:${PORT}`);
     console.log(`📡 Pico stuurt data naar: http://YOUR_IP:${PORT}/data\n`);

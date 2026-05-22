@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Status - Pico IoT</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 420px; text-align:center; }
+        h1 { color: #667eea; margin-bottom: 10px; }
+        .status-box { height: 160px; border-radius: 8px; display:flex; align-items:center; justify-content:center; color: white; font-weight: 700; font-size: 28px; margin: 20px 0; }
+        .muted { color: #666; font-size: 14px; }
+        .back-link { display:inline-block; margin-top: 10px; padding: 8px 14px; background:#667eea; color:#fff; border-radius:6px; text-decoration:none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Sensor Status</h1>
+        <div id="statusBox" class="status-box" style="background:#999;">-- mm</div>
+        <div id="statusText" class="muted">Wacht op gegevens...</div>
+        <a href="index.html" class="back-link">Terug naar dashboard</a>
+    </div>
+
+    <script>
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/api/stats');
+                if (!res.ok) throw new Error('Network response not ok');
+                const stats = await res.json();
+                const latest = stats.latest ? stats.latest.distance : null;
+
+                const box = document.getElementById('statusBox');
+                const text = document.getElementById('statusText');
+
+                if (latest === null || latest === undefined) {
+                    box.style.background = '#999';
+                    box.textContent = '-- mm';
+                    text.textContent = 'Geen recente meting beschikbaar';
+                    return;
+                }
+
+                box.textContent = latest + ' mm';
+
+                if (Number(latest) < 100) {
+                    box.style.background = '#4CAF50'; // green
+                    text.textContent = 'Status: OK (lager dan 100 mm)';
+                } else {
+                    box.style.background = '#E53935'; // red
+                    text.textContent = 'Waarschuwing: Hoog (100 mm of hoger)';
+                }
+            } catch (err) {
+                const box = document.getElementById('statusBox');
+                const text = document.getElementById('statusText');
+                box.style.background = '#999';
+                box.textContent = '-- mm';
+                text.textContent = 'Fout bij ophalen: ' + err.message;
+                console.error(err);
+            }
+        }
+
+        // Initial fetch and periodic updates
+        fetchStatus();
+        setInterval(fetchStatus, 3000);
+    </script>
+</body>
+</html>
